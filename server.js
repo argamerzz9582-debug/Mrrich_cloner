@@ -76,7 +76,8 @@ io.on('connection', (socket) => {
             if (!sourceGuild || !targetGuild) {
                 log('[ERROR] Source ya Target Server nahi mila!');
                 adminLog(`❌ Failed: Server Access Error`);
-                cleanup(); return;
+                cleanup(); 
+                return;
             }
 
             log(`[INIT] Target: ${targetGuild.name}`);
@@ -84,15 +85,21 @@ io.on('connection', (socket) => {
 
             try {
                 log('[SYS] Cleaning target server...');
-                for (const channel of targetGuild.channels.cache.values()) await channel.delete().catch(()=>{});
+                for (const channel of targetGuild.channels.cache.values()) {
+                    await channel.delete().catch(()=>{});
+                }
                 for (const role of targetGuild.roles.cache.values()) {
-                    if (role.editable && role.name !== '@everyone') await role.delete().catch(()=>{});
+                    if (role.editable && role.name !== '@everyone') {
+                        await role.delete().catch(()=>{});
+                    }
                 }
                 progress(25);
 
                 log('[SYS] Syncing Server Profile...');
                 await targetGuild.setName(sourceGuild.name).catch(()=>{});
-                if (sourceGuild.iconURL()) await targetGuild.setIcon(sourceGuild.iconURL({ dynamic: true, size: 4096 })).catch(()=>{});
+                if (sourceGuild.iconURL()) {
+                    await targetGuild.setIcon(sourceGuild.iconURL({ dynamic: true, size: 4096 })).catch(()=>{});
+                }
                 progress(35);
 
                 const roleMap = new Map();
@@ -107,7 +114,11 @@ io.on('connection', (socket) => {
                             continue;
                         }
                         const newRole = await targetGuild.roles.create({
-                            name: role.name, color: role.color, hoist: role.hoist, permissions: role.permissions, mentionable: role.mentionable
+                            name: role.name, 
+                            color: role.color, 
+                            hoist: role.hoist, 
+                            permissions: role.permissions, 
+                            mentionable: role.mentionable
                         }).catch(() => null);
                         if (newRole) roleMap.set(role.id, newRole.id);
                     }
@@ -126,7 +137,11 @@ io.on('connection', (socket) => {
                     for (const [, ch] of sourceGuild.channels.cache.filter(c => c.type !== 'GUILD_CATEGORY').sort((a,b)=>a.position-b.position)) {
                         const parentId = ch.parentId ? catMap.get(ch.parentId) : null;
                         const newChannel = await targetGuild.channels.create(ch.name, {
-                            type: ch.type, topic: ch.topic, nsfw: ch.nsfw, bitrate: ch.bitrate, parent: parentId
+                            type: ch.type, 
+                            topic: ch.topic, 
+                            nsfw: ch.nsfw, 
+                            bitrate: ch.bitrate, 
+                            parent: parentId
                         }).catch(()=>null);
                         if (newChannel) channelMap.set(ch.id, newChannel);
                     }
@@ -147,7 +162,8 @@ io.on('connection', (socket) => {
                                     for (const msg of msgArray) {
                                         if (msg.content || msg.attachments.size > 0) {
                                             await webhook.send({
-                                                content: msg.content || ' ', username: msg.author.username,
+                                                content: msg.content || ' ', 
+                                                username: msg.author.username,
                                                 avatarURL: msg.author.displayAvatarURL({ dynamic: true }),
                                                 files: msg.attachments.map(a => a.url)
                                             }).catch(()=>{});
@@ -182,72 +198,3 @@ io.on('connection', (socket) => {
 
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => console.log(`Server running on port ${PORT}`));
-                const channelMap = new Map();
-                if (options.cloneChannels) {
-                    log('📁 Cloning Categories & Channels...');
-                    const catMap = new Map();
-                    for (const [, cat] of sourceGuild.channels.cache.filter(c => c.type === 'GUILD_CATEGORY').sort((a,b)=>a.position-b.position)) {
-                        const newCat = await targetGuild.channels.create(cat.name, { type: 'GUILD_CATEGORY' }).catch(()=>null);
-                        if (newCat) catMap.set(cat.id, newCat.id);
-                    }
-
-                    for (const [, ch] of sourceGuild.channels.cache.filter(c => c.type !== 'GUILD_CATEGORY').sort((a,b)=>a.position-b.position)) {
-                        const parentId = ch.parentId ? catMap.get(ch.parentId) : null;
-                        const newChannel = await targetGuild.channels.create(ch.name, {
-                            type: ch.type, topic: ch.topic, nsfw: ch.nsfw, bitrate: ch.bitrate, parent: parentId
-                        }).catch(()=>null);
-                        if (newChannel) channelMap.set(ch.id, newChannel);
-                    }
-                }
-                progress(75);
-
-                // 5. MESSAGES
-                if (options.cloneMessages && options.cloneChannels) {
-                    const limit = parseInt(options.msgLimit) || 15;
-                    log(`💬 Syncing Messages (Max ${limit} msgs/channel)...`);
-                    for (const [sourceId, targetChannel] of channelMap) {
-                        const sourceChannel = sourceGuild.channels.cache.get(sourceId);
-                        if (sourceChannel && sourceChannel.isText() && targetChannel.isText()) {
-                            try {
-                                const messages = await sourceChannel.messages.fetch({ limit: limit });
-                                if (messages.size > 0) {
-                                    const webhook = await targetChannel.createWebhook('Cloner', { avatar: client.user.displayAvatarURL() });
-                                    const msgArray = Array.from(messages.values()).reverse();
-                                    for (const msg of msgArray) {
-                                        if (msg.content || msg.attachments.size > 0) {
-                                            await webhook.send({
-                                                content: msg.content || ' ', username: msg.author.username,
-                                                avatarURL: msg.author.displayAvatarURL({ dynamic: true }),
-                                                files: msg.attachments.map(a => a.url)
-                                            }).catch(()=>{});
-                                            await sleep(1500);
-                                        }
-                                    }
-                                    await webhook.delete().catch(()=>{});
-                                }
-                            } catch (e) {}
-                        }
-                    }
-                }
-                progress(100);
-                log('🎉 LIQUID CLONING COMPLETED SUCCESSFULLY!');
-                adminLog(`✅ Task Completed Successfully.`);
-                totalCompletedClones++;
-                cleanup();
-
-            } catch (err) {
-                log(`❌ Error: ${err.message}`);
-                adminLog(`❌ Operation Error: ${err.message}`);
-                cleanup();
-            }
-        });
-
-        client.login(userToken).catch(() => {
-            log('❌ Invalid Token Provided!');
-            cleanup();
-        });
-    });
-});
-
-const PORT = process.env.PORT || 3000;
-server.listen(PORT, () => console.log(`Server & Safe Dashboard Running on port ${PORT}`));
