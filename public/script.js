@@ -5,6 +5,16 @@ const progressBar = document.getElementById('progressBar');
 const progressText = document.getElementById('progressText');
 const startBtn = document.getElementById('startBtn');
 
+// 🎨 Real-Time Theme Applicator
+socket.on('apply_theme', (theme) => {
+    document.documentElement.style.setProperty('--bg-grad-1', theme.bg1);
+    document.documentElement.style.setProperty('--bg-grad-2', theme.bg2);
+    document.documentElement.style.setProperty('--primary', theme.primary);
+    
+    document.getElementById('appTitle').innerText = theme.title;
+    document.getElementById('appDesc').innerText = theme.desc;
+});
+
 form.addEventListener('submit', (e) => {
     e.preventDefault();
     
@@ -19,30 +29,33 @@ form.addEventListener('submit', (e) => {
         msgLimit: document.getElementById('msgLimit').value
     };
 
-    logContent.innerHTML = '';
+    logContent.innerHTML = 'root@roxy-scraper:~# Initializing scraping sequence...\n';
     progressBar.style.width = '0%';
-    progressText.innerText = '0% Complete';
-    startBtn.innerText = 'Syncing Data...';
+    progressText.innerText = '0%';
+    startBtn.innerText = 'SYNCING DATA...';
     startBtn.disabled = true;
 
     socket.emit('start_clone', { userToken, sourceId, targetId, options });
 });
 
+// Hacker Style Real-time Terminal Logging
 socket.on('log', (msg) => {
     const div = document.createElement('div');
-    div.innerText = `> ${msg}`;
-    div.style.marginBottom = '6px';
-    div.style.opacity = '0.9';
+    // Prepend hacker prefix to every new log
+    div.innerText = `root@roxy-scraper:~# ${msg}`;
+    div.style.marginBottom = '4px';
     logContent.appendChild(div);
+    
+    // Auto-scroll terminal to bottom
     const terminal = document.getElementById('terminal');
     terminal.scrollTop = terminal.scrollHeight;
 });
 
 socket.on('progress', (percent) => {
     progressBar.style.width = `${percent}%`;
-    progressText.innerText = `${percent}% Complete`;
+    progressText.innerText = `${percent}%`;
     if (percent === 100) {
-        startBtn.innerText = 'Initiate New Sync';
+        startBtn.innerText = 'START NEW SEQUENCE';
         startBtn.disabled = false;
     }
 });
