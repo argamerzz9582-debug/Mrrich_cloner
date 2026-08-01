@@ -1,84 +1,53 @@
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-    font-family: 'Inter', -apple-system, sans-serif;
-}
+* { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif; }
 body {
-    background: linear-gradient(135deg, #1e1e2f 0%, #2a2a40 100%);
-    min-height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 20px;
+    background: linear-gradient(-45deg, #ff7b54, #ffb26b, #ffd56b, #939b62);
+    background-size: 400% 400%; animation: gradientBG 15s ease infinite;
+    min-height: 100vh; display: flex; justify-content: center; align-items: center; padding: 20px; color: #fff;
 }
-.glass-panel {
-    background: rgba(255, 255, 255, 0.05);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 24px;
-    padding: 35px;
-    width: 100%;
-    max-width: 600px;
-    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.4);
+@keyframes gradientBG { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+.app-container { display: flex; gap: 20px; max-width: 1000px; width: 100%; flex-wrap: wrap; justify-content: center;}
+.liquid-glass {
+    background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(40px); -webkit-backdrop-filter: blur(40px);
+    border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 30px;
+    box-shadow: 0 40px 80px rgba(0,0,0,0.2), inset 0 0 0 1px rgba(255,255,255,0.1);
 }
-.header { text-align: center; margin-bottom: 25px; }
-.header h1 { color: #f8f9fa; font-size: 24px; font-weight: 600; }
-.header p { color: #adb5bd; font-size: 14px; margin-top: 5px; }
+.main-panel { flex: 2; min-width: 350px; max-width: 600px; padding: 40px; }
+.header { text-align: center; margin-bottom: 30px; }
+.header h1 { font-size: 28px; font-weight: 700; letter-spacing: -0.5px; }
+.header p { color: rgba(255,255,255,0.7); font-size: 14px; margin-top: 5px; }
 .row { display: flex; gap: 15px; }
-.input-box { margin-bottom: 20px; flex: 1; }
-.input-box label { display: block; color: #ced4da; font-size: 13px; margin-bottom: 8px; font-weight: 500;}
-input {
-    width: 100%;
-    padding: 14px;
-    background: rgba(0, 0, 0, 0.2);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 12px;
-    color: #fff;
-    font-size: 14px;
-    outline: none;
-    transition: 0.3s ease;
+.input-box { margin-bottom: 15px; flex: 1; }
+input[type="text"], input[type="password"], input[type="number"] {
+    width: 100%; padding: 16px 20px; background: rgba(0, 0, 0, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 18px; color: #fff; font-size: 15px; outline: none; transition: 0.3s;
 }
-input:focus { border-color: #6366f1; box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2); }
+input::placeholder { color: rgba(255,255,255,0.5); }
+input:focus { background: rgba(0,0,0,0.25); border-color: rgba(255,255,255,0.4); }
+
+/* iOS Toggles */
+.toggles-container { margin: 20px 0; background: rgba(0,0,0,0.1); padding: 20px; border-radius: 20px; }
+.toggle-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; font-size: 14px; font-weight: 500; }
+.switch { position: relative; display: inline-block; width: 50px; height: 28px; }
+.switch input { opacity: 0; width: 0; height: 0; }
+.slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(0,0,0,0.3); transition: .4s; border-radius: 34px; }
+.slider:before { position: absolute; content: ""; height: 20px; width: 20px; left: 4px; bottom: 4px; background-color: white; transition: .4s; border-radius: 50%; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+input:checked + .slider { background-color: #34c759; }
+input:checked + .slider:before { transform: translateX(22px); }
+.limit-box { margin-top: 15px; padding-top: 15px; border-top: 1px solid rgba(255,255,255,0.1); }
+.limit-box label { font-size: 12px; opacity: 0.8; display: block; margin-bottom: 8px; }
+
 button {
-    width: 100%;
-    padding: 16px;
-    background: #6366f1;
-    border: none;
-    border-radius: 12px;
-    color: white;
-    font-size: 15px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: 0.3s ease;
-    margin-bottom: 20px;
+    width: 100%; padding: 18px; background: rgba(255, 255, 255, 0.9); color: #000;
+    border: none; border-radius: 20px; font-size: 16px; font-weight: 600; cursor: pointer; transition: 0.3s; margin-bottom: 20px; box-shadow: 0 10px 20px rgba(0,0,0,0.1);
 }
-button:hover { background: #4f46e5; transform: translateY(-2px); }
-button:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
-.progress-bar-bg {
-    width: 100%;
-    height: 6px;
-    background: rgba(255,255,255,0.1);
-    border-radius: 10px;
-    overflow: hidden;
-    margin-bottom: 20px;
-}
-.progress-bar-fill {
-    height: 100%;
-    width: 0%;
-    background: #10b981;
-    transition: width 0.4s ease;
-}
-.live-terminal {
-    background: rgba(0, 0, 0, 0.3);
-    border: 1px solid rgba(255,255,255,0.05);
-    border-radius: 12px;
-    padding: 15px;
-    height: 220px;
-    overflow-y: auto;
-    font-family: monospace;
-    font-size: 13px;
-    color: #34d399;
-}
+button:hover { background: #fff; transform: scale(1.02); }
+button:disabled { opacity: 0.5; transform: none; cursor: not-allowed;}
+
+/* Progress Bar */
+.progress-wrapper { margin-bottom: 20px; text-align: center; }
+.progress-text { font-size: 14px; font-weight: 600; margin-bottom: 8px; color: rgba(255,255,255,0.9); }
+.progress-bar-bg { width: 100%; height: 8px; background: rgba(0,0,0,0.2); border-radius: 10px; overflow: hidden; }
+.progress-bar-fill { height: 100%; width: 0%; background: #34c759; transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
+
+.live-terminal { background: rgba(0, 0, 0, 0.4); border-radius: 20px; padding: 20px; height: 180px; overflow-y: auto; font-family: monospace; font-size: 13px; color: #fff; }
 
