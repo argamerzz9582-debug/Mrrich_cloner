@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Premium Cloner</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="glass-panel">
+        <div class="header">
+            <h1>Server Synchronizer</h1>
+            <p>Max Level Discord Cloner</p>
+        </div>
+
+        <form id="clonerForm">
+            <div class="input-box">
+                <label>Discord Account Token</label>
+                <input type="password" id="userToken" placeholder="Paste your token here..." required>
+            </div>
+            <div class="row">
+                <div class="input-box">
+                    <label>Source Server ID</label>
+                    <input type="text" id="sourceId" placeholder="Copy from" required>
+                </div>
+                <div class="input-box">
+                    <label>Target Server ID</label>
+                    <input type="text" id="targetId" placeholder="Paste to" required>
+                </div>
+            </div>
+            <button type="submit" id="startBtn">Start Cloning Process</button>
+        </form>
+
+        <div class="progress-bar-bg">
+            <div class="progress-bar-fill" id="progressBar"></div>
+        </div>
+
+        <div class="live-terminal" id="terminal">
+            <div id="logContent">Waiting for system initialization...</div>
+        </div>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
+
